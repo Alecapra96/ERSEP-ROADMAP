@@ -29,11 +29,11 @@
             /* Increased min-width for each week to make bars wider */
             grid-template-columns: repeat(13, minmax(60px, 1fr)); 
         }
-                 .gantt-timeline-phase2 {
-             display: grid;
-             /* Phase 2 starts from week 4 and goes to week 12, so 9 weeks */
-             grid-template-columns: repeat(9, minmax(60px, 1fr)); 
-         }
+        .gantt-timeline-phase2 {
+            display: grid;
+            /* Phase 2 starts from week 4 and goes to week 14, so 11 weeks */
+            grid-template-columns: repeat(11, minmax(60px, 1fr)); 
+        }
         .gantt-bar {
             transition: all 0.2s ease-in-out;
         }
@@ -154,24 +154,24 @@
             const totalWeeks = 13;
 
                          // --- Data Definitions with NEW Voyansi Brand Colors ---
-                          const platformTasks = [
-                  { name: 'Validación Técnica con CiDi *', start: 1, end: 1, resource: 'Equipo Completo', color: 'bg-voyansi-pink' },
-                  { name: 'Validación de Capacidad y Alcance *', start: 1, end: 2, resource: 'Equipo y Directivos', color: 'bg-voyansi-pink' },
-                  { name: 'Planificación y Diseño General *', start: 2, end: 3, resource: 'Equipo Completo', color: 'bg-voyansi-purple-light' },
-                  { name: 'Construcción de Acceso y Seguridad *', start: 4, end: 5, resource: 'Equipo Técnico', color: 'bg-voyansi-purple-dark' },
-                  { name: 'Desarrollo de Interfaz Principal *', start: 4, end: 5, resource: 'Equipo de Interfaz', color: 'bg-voyansi-purple-light' },
-                  { name: 'Creación del Sistema de Permisos *', start: 6, end: 9, resource: 'Equipo Técnico', color: 'bg-voyansi-purple-dark' },
-                  { name: 'Integración de Lógica de Usuario *', start: 8, end: 10, resource: 'Equipo de Interfaz', color: 'bg-voyansi-purple-light' },
-                  { name: 'Pruebas Generales de la Plataforma *', start: 11, end: 12, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
-                  { name: 'Documentación *', start: 12, end: 12, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
+             const platformTasks = [
+                 { name: 'Validación Técnica con CiDi *', start: 1, end: 1, resource: 'Equipo Completo', color: 'bg-voyansi-pink' },
+                 { name: 'Validación de Capacidad y Alcance *', start: 1, end: 2, resource: 'Equipo y Directivos', color: 'bg-voyansi-pink' },
+                 { name: 'Planificación y Diseño General *', start: 2, end: 3, resource: 'Equipo Completo', color: 'bg-voyansi-purple-light' },
+                 { name: 'Construcción de Acceso y Seguridad *', start: 4, end: 5, resource: 'Equipo Técnico', color: 'bg-voyansi-purple-dark' },
+                 { name: 'Desarrollo de Interfaz Principal *', start: 4, end: 5, resource: 'Equipo de Interfaz', color: 'bg-voyansi-purple-light' },
+                 { name: 'Creación del Sistema de Permisos *', start: 6, end: 9, resource: 'Equipo Técnico', color: 'bg-voyansi-purple-dark' },
+                 { name: 'Integración de Lógica de Usuario *', start: 8, end: 10, resource: 'Equipo de Interfaz', color: 'bg-voyansi-purple-light' },
+                 { name: 'Pruebas Generales de la Plataforma *', start: 11, end: 12, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
+                 { name: 'Documentación *', start: 13, end: 13, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
              ];
 
-                         const moduleTasks = [
-                  { name: 'Entrevista con Gerencia*', start: 4, end: 7, resource: 'Equipo y Área Involucrada', color: 'bg-voyansi-green' },
-                  { name: 'Entrevista con Gerencia*', start: 12, end: 12, resource: 'Equipo y Área Involucrada', color: 'bg-voyansi-green' },
-                  { name: 'Análisis y desarrollo *', start: 6, end: 12, resource: 'Equipo Completo', color: 'bg-voyansi-purple-dark' },
-                  { name: 'Pruebas y documentación *', start: 10, end: 12, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
-             ];
+            const moduleTasks = [
+                 { name: 'Entrevista con Gerencia*', start: 4, end: 7, resource: 'Equipo y Área Involucrada', color: 'bg-voyansi-green' },
+                 { name: 'Entrevista con Gerencia*', start: 12, end: 14, resource: 'Equipo y Área Involucrada', color: 'bg-voyansi-green' },
+                 { name: 'Análisis y desarrollo *', start: 6, end: 12, resource: 'Equipo Completo', color: 'bg-voyansi-purple-dark' },
+                 { name: 'Pruebas y documentación *', start: 10, end: 14, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
+            ];
             
             // --- Generic Render Function ---
             function renderGantt(containerId, tasks) {
@@ -322,13 +322,13 @@
                 const timelineHeader = document.createElement('div');
                 timelineHeader.className = 'gantt-timeline-phase2';
                 
-                                 // Phase 2 starts from Month 2, Week 4 and covers 3 months
-                 const monthNames = ["Mes 2", "Mes 3", "Mes 4"];
-                 monthNames.forEach((month, index) => {
-                     let span;
-                     if (index === 0) span = 1; // Mes 2 only has 1 week (S4)
-                     else if (index === 1) span = 4; // Mes 3 has 4 weeks (S5-S8)
-                     else span = 4; // Mes 4 has 4 weeks (S9-S12) - adjusted for project needs
+                // Phase 2 starts from Month 2, Week 4 and covers 3 months
+                const monthNames = ["Mes 2", "Mes 3", "Mes 4"];
+                monthNames.forEach((month, index) => {
+                    let span;
+                    if (index === 0) span = 1; // Mes 2 only has 1 week (S4)
+                    else if (index === 1) span = 4; // Mes 3 has 4 weeks (S5-S8)
+                    else span = 6; // Mes 4 has 6 weeks (S9-S14) - extended for project needs
                     
                     const monthCell = document.createElement('div');
                     monthCell.className = 'text-center font-semibold p-1 text-slate-600 bg-slate-100 border-b border-slate-200 text-sm';
@@ -337,8 +337,8 @@
                     timelineHeader.appendChild(monthCell);
                 });
                 
-                                 // Week labels starting from S4 to S12
-                 for (let i = 4; i <= 12; i++) {
+                // Week labels starting from S4 to S14
+                for (let i = 4; i <= 14; i++) {
                     const weekCell = document.createElement('div');
                     weekCell.className = 'text-center font-semibold p-1 text-slate-500 text-xs border-t border-slate-200';
                     weekCell.innerText = `S${i}`;
@@ -389,8 +389,8 @@
                     const timelineRow = document.createElement('div');
                     timelineRow.className = 'gantt-timeline relative border-t border-slate-200';
                     
-                                         // Create week cells starting from week 4 to week 12
-                     for (let i = 4; i <= 12; i++) {
+                    // Create week cells starting from week 4 to week 14
+                    for (let i = 4; i <= 14; i++) {
                         const weekCell = document.createElement('div');
                         weekCell.className = 'border-r border-slate-100 h-full';
                         weekCell.style.gridColumn = i - 3; // Adjust grid position for Phase 2
