@@ -168,8 +168,9 @@
 
             const moduleTasks = [
                  { name: 'Entrevista con Gerencia*', start: 4, end: 7, resource: 'Equipo y Área Involucrada', color: 'bg-voyansi-green' },
+                 { name: 'Entrevista con Gerencia*', start: 12, end: 14, resource: 'Equipo y Área Involucrada', color: 'bg-voyansi-green' },
                  { name: 'Análisis y desarrollo *', start: 6, end: 12, resource: 'Equipo Completo', color: 'bg-voyansi-purple-dark' },
-                 { name: 'Pruebas y documentación *', start: 13, end: 14, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
+                 { name: 'Pruebas y documentación *', start: 10, end: 14, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
             ];
             
             // --- Generic Render Function ---
@@ -346,8 +347,38 @@
                 headerContainer.appendChild(timelineHeader);
                 chartWrapper.appendChild(headerContainer);
 
-                // Task Rows
+                // Task Rows - Combine duplicate tasks
+                const uniqueTasks = [];
+                const taskGroups = {};
+                
+                // Group tasks by name
                 tasks.forEach(task => {
+                    if (!taskGroups[task.name]) {
+                        taskGroups[task.name] = [];
+                    }
+                    taskGroups[task.name].push(task);
+                });
+                
+                // Create combined tasks
+                Object.keys(taskGroups).forEach(taskName => {
+                    const group = taskGroups[taskName];
+                    if (group.length === 1) {
+                        uniqueTasks.push(group[0]);
+                    } else {
+                        // Combine multiple tasks with same name
+                        const combinedTask = {
+                            name: taskName,
+                            start: Math.min(...group.map(t => t.start)),
+                            end: Math.max(...group.map(t => t.end)),
+                            resource: group[0].resource,
+                            color: group[0].color,
+                            segments: group.map(t => ({ start: t.start, end: t.end }))
+                        };
+                        uniqueTasks.push(combinedTask);
+                    }
+                });
+                
+                uniqueTasks.forEach(task => {
                     const rowContainer = document.createElement('div');
                     rowContainer.className = 'gantt-container';
                     const nameCell = document.createElement('div');
@@ -367,23 +398,57 @@
                         timelineRow.appendChild(weekCell);
                     }
 
-                    const bar = document.createElement('div');
-                    const duration = task.end - task.start + 1;
-                    // Adjust start position for Phase 2 (subtract 3 to align with new grid)
-                    const adjustedStart = task.start - 3;
-                    bar.style.gridColumn = `${adjustedStart} / span ${duration}`;
-                    bar.style.gridRow = 1;
-                    
-                    let textColorClass = 'text-white';
-                    if (task.color === 'bg-voyansi-green') {
-                        textColorClass = 'text-voyansi-black';
-                    }
+                    if (task.segments) {
+                        // Render multiple segments for combined tasks
+                        task.segments.forEach(segment => {
+                            const bar = document.createElement('div');
+                            const duration = segment.end - segment.start + 1;
+                            const adjustedStart = segment.start - 3;
+                            bar.style.gridColumn = `${adjustedStart} / span ${duration}`;
+                            bar.style.gridRow = 1;
+                            
+                            let textColorClass = 'text-white';
+                            if (task.color === 'bg-voyansi-green') {
+                                textColorClass = 'text-voyansi-black';
+                            }
 
-                    bar.className = `gantt-bar z-10 h-full ${task.color} ${textColorClass} rounded-md m-1 flex items-center justify-start px-2 text-xs font-bold opacity-90 shadow`;
-                    if (task.ongoing) bar.classList.add('gantt-bar-ongoing');
-                    bar.innerHTML = `<span style="font-size: 10px;">${task.name.split('*')[0]}</span>`;
-                    bar.setAttribute('title', `Tarea: ${task.name}\nSemanas: ${task.start}-${task.end}\nResponsable: ${task.resource}`);
-                    timelineRow.appendChild(bar);
+                            bar.className = `gantt-bar z-10 h-full ${task.color} ${textColorClass} rounded-md m-1 flex items-center justify-start px-2 text-xs font-bold opacity-90 shadow`;
+                            
+                            // Add arrow if task name contains specific indicator
+                            let taskText = task.name.split('*')[0];
+                            if (task.name.includes('Entrevista con Gerencia')) {
+                                taskText += ' -->';
+                            }
+                            
+                            bar.innerHTML = `<span style="font-size: 10px;">${taskText}</span>`;
+                            bar.setAttribute('title', `Tarea: ${task.name}\nSemanas: ${segment.start}-${segment.end}\nResponsable: ${task.resource}`);
+                            timelineRow.appendChild(bar);
+                        });
+                    } else {
+                        // Single task
+                        const bar = document.createElement('div');
+                        const duration = task.end - task.start + 1;
+                        const adjustedStart = task.start - 3;
+                        bar.style.gridColumn = `${adjustedStart} / span ${duration}`;
+                        bar.style.gridRow = 1;
+                        
+                        let textColorClass = 'text-white';
+                        if (task.color === 'bg-voyansi-green') {
+                            textColorClass = 'text-voyansi-black';
+                        }
+
+                        bar.className = `gantt-bar z-10 h-full ${task.color} ${textColorClass} rounded-md m-1 flex items-center justify-start px-2 text-xs font-bold opacity-90 shadow`;
+                        
+                        // Add arrow if task name contains specific indicator
+                        let taskText = task.name.split('*')[0];
+                        if (task.name.includes('Entrevista con Gerencia')) {
+                            taskText += ' -->';
+                        }
+                        
+                        bar.innerHTML = `<span style="font-size: 10px;">${taskText}</span>`;
+                        bar.setAttribute('title', `Tarea: ${task.name}\nSemanas: ${task.start}-${task.end}\nResponsable: ${task.resource}`);
+                        timelineRow.appendChild(bar);
+                    }
                     
                     rowContainer.appendChild(timelineRow);
                     chartWrapper.appendChild(rowContainer);
