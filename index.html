@@ -29,6 +29,11 @@
             /* Increased min-width for each week to make bars wider */
             grid-template-columns: repeat(13, minmax(60px, 1fr)); 
         }
+        .gantt-timeline-phase2 {
+            display: grid;
+            /* Phase 2 starts from week 4 and goes to week 14, so 11 weeks */
+            grid-template-columns: repeat(11, minmax(60px, 1fr)); 
+        }
         .gantt-bar {
             transition: all 0.2s ease-in-out;
         }
@@ -114,7 +119,16 @@
         <!-- Page 2: Módulos -->
         <div id="gantt-page-2" class="gantt-page">
             <h2 class="text-xl font-bold text-slate-800 mb-4 text-center">Fase 2: Desarrollo de Módulos Futuros</h2>
-             <div id="gantt-chart-2"></div>
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center gap-2 bg-voyansi-pink-bg border border-voyansi-pink/30 rounded-lg px-4 py-2">
+                    <svg class="w-5 h-5 text-voyansi-pink animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    <span class="text-sm font-medium text-voyansi-black">Ciclo repetitivo cada 3 meses *</span>
+                    <div class="text-xs text-voyansi-pink mt-1">* Extendible dependiendo de la complejidad del módulo</div>
+                </div>
+            </div>
+            <div id="gantt-chart-2"></div>
         </div>
 
         <!-- Page 3: Milestone Descriptions -->
@@ -153,8 +167,9 @@
              ];
 
             const moduleTasks = [
-                 { name: 'Entrevista con Gerencia*', start: 4, end: 11, resource: 'Equipo y Área Involucrada', color: 'bg-voyansi-green' },
-                 { name: 'Análisis y desarrollo *', start: 12, end: 13, resource: 'Equipo Completo', color: 'bg-voyansi-green', ongoing: true },
+                 { name: 'Entrevista con Gerencia*', start: 4, end: 7, resource: 'Equipo y Área Involucrada', color: 'bg-voyansi-green' },
+                 { name: 'Análisis y desarrollo *', start: 6, end: 12, resource: 'Equipo Completo', color: 'bg-voyansi-purple-dark' },
+                 { name: 'Pruebas y documentación *', start: 13, end: 14, resource: 'Equipo Completo', color: 'bg-voyansi-gray' },
             ];
             
             // --- Generic Render Function ---
@@ -200,7 +215,7 @@
                     rowContainer.appendChild(nameCell);
 
                     const timelineRow = document.createElement('div');
-                    timelineRow.className = 'gantt-timeline relative border-t border-slate-200';
+                    timelineRow.className = 'gantt-timeline-phase2 relative border-t border-slate-200';
                     
                     for (let i = 1; i <= totalWeeks; i++) {
                         const weekCell = document.createElement('div');
@@ -285,7 +300,104 @@
 
             // --- Render Both Charts ---
             renderGantt('gantt-chart-1', platformTasks);
-            renderGantt('gantt-chart-2', moduleTasks);
+            renderGanttPhase2('gantt-chart-2', moduleTasks);
+            
+            // Add cyclic indicator for Phase 2
+            addCyclicIndicator('gantt-chart-2');
+            
+            // Function to render Phase 2 starting from Month 2, Week 4
+            function renderGanttPhase2(containerId, tasks) {
+                const ganttChart = document.getElementById(containerId);
+                const chartWrapper = document.createElement('div');
+                chartWrapper.style.width = '100%';
+
+                // Header
+                const headerContainer = document.createElement('div');
+                headerContainer.className = 'gantt-container sticky top-0 bg-white z-10 border-b-2 border-slate-300';
+                const taskHeader = document.createElement('div');
+                taskHeader.className = 'font-bold p-2 text-slate-700 border-r border-slate-200 text-sm';
+                taskHeader.innerText = 'Hitos del Proyecto';
+                headerContainer.appendChild(taskHeader);
+                const timelineHeader = document.createElement('div');
+                timelineHeader.className = 'gantt-timeline-phase2';
+                
+                // Phase 2 starts from Month 2, Week 4 and covers 3 months
+                const monthNames = ["Mes 2", "Mes 3", "Mes 4"];
+                monthNames.forEach((month, index) => {
+                    let span;
+                    if (index === 0) span = 1; // Mes 2 only has 1 week (S4)
+                    else if (index === 1) span = 4; // Mes 3 has 4 weeks (S5-S8)
+                    else span = 6; // Mes 4 has 6 weeks (S9-S14) - extended for project needs
+                    
+                    const monthCell = document.createElement('div');
+                    monthCell.className = 'text-center font-semibold p-1 text-slate-600 bg-slate-100 border-b border-slate-200 text-sm';
+                    monthCell.innerText = month;
+                    monthCell.style.gridColumn = `span ${span}`;
+                    timelineHeader.appendChild(monthCell);
+                });
+                
+                // Week labels starting from S4 to S14
+                for (let i = 4; i <= 14; i++) {
+                    const weekCell = document.createElement('div');
+                    weekCell.className = 'text-center font-semibold p-1 text-slate-500 text-xs border-t border-slate-200';
+                    weekCell.innerText = `S${i}`;
+                    timelineHeader.appendChild(weekCell);
+                }
+                headerContainer.appendChild(timelineHeader);
+                chartWrapper.appendChild(headerContainer);
+
+                // Task Rows
+                tasks.forEach(task => {
+                    const rowContainer = document.createElement('div');
+                    rowContainer.className = 'gantt-container';
+                    const nameCell = document.createElement('div');
+                    nameCell.className = 'p-2 border-t border-slate-200 text-xs border-r border-slate-200';
+                    nameCell.innerHTML = `<div class="font-medium text-slate-800">${task.name}</div><div class="text-xs text-slate-500">${task.resource}</div>`;
+                    rowContainer.appendChild(nameCell);
+
+                    const timelineRow = document.createElement('div');
+                    timelineRow.className = 'gantt-timeline relative border-t border-slate-200';
+                    
+                    // Create week cells starting from week 4 to week 14
+                    for (let i = 4; i <= 14; i++) {
+                        const weekCell = document.createElement('div');
+                        weekCell.className = 'border-r border-slate-100 h-full';
+                        weekCell.style.gridColumn = i - 3; // Adjust grid position for Phase 2
+                        weekCell.style.gridRow = 1;
+                        timelineRow.appendChild(weekCell);
+                    }
+
+                    const bar = document.createElement('div');
+                    const duration = task.end - task.start + 1;
+                    // Adjust start position for Phase 2 (subtract 3 to align with new grid)
+                    const adjustedStart = task.start - 3;
+                    bar.style.gridColumn = `${adjustedStart} / span ${duration}`;
+                    bar.style.gridRow = 1;
+                    
+                    let textColorClass = 'text-white';
+                    if (task.color === 'bg-voyansi-green') {
+                        textColorClass = 'text-voyansi-black';
+                    }
+
+                    bar.className = `gantt-bar z-10 h-full ${task.color} ${textColorClass} rounded-md m-1 flex items-center justify-start px-2 text-xs font-bold opacity-90 shadow`;
+                    if (task.ongoing) bar.classList.add('gantt-bar-ongoing');
+                    bar.innerHTML = `<span style="font-size: 10px;">${task.name.split('*')[0]}</span>`;
+                    bar.setAttribute('title', `Tarea: ${task.name}\nSemanas: ${task.start}-${task.end}\nResponsable: ${task.resource}`);
+                    timelineRow.appendChild(bar);
+                    
+                    rowContainer.appendChild(timelineRow);
+                    chartWrapper.appendChild(rowContainer);
+                });
+                ganttChart.appendChild(chartWrapper);
+            }
+            
+            // Function to add cyclic indicator
+            function addCyclicIndicator(containerId) {
+                const container = document.getElementById(containerId);
+                const chartWrapper = container.querySelector('div');
+                
+      
+            }
         });
     </script>
 
